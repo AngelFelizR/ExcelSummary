@@ -83,7 +83,8 @@ wb_merge_header <- function(wb,
     which(header_matrix[nrow(header_matrix),] %chin% avoid_merge) |>
     (\(x) x + start_col - 1L)() |>
     range() |>
-    openxlsx2::wb_dims(row = nrow(header_matrix) + start_row - 1L) |>
+    openxlsx2::wb_dims(rows = nrow(header_matrix) + start_row - 1L,
+                       cols = _) |>
     paste0(collapse = ":") |>
     openxlsx2::wb_add_border(wb = wb,
                              sheet = sheet,

@@ -32,6 +32,9 @@ st_add_table(
 
 \item{...}{a}
 }
+\value{
+a workbook object
+}
 \description{
 Add a table data in workbook
 }
