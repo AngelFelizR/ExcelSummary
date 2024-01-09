@@ -1,0 +1,14 @@
+Package: ExcelSummary
+Type: Package
+Title: Create Excel Summary Tables
+Version: 0.0.99
+Authors@R: 
+    person("Angel", "Feliz", , "angel.esteban.feliz@gmail.com", role = c("aut", "cre"))
+Description: Provede tidy functions to summary, reshape and export tables in Excel.
+URL: https://github.com/AngelFelizR/ExcelSummary
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    data.table
+RoxygenNote: 7.2.3
