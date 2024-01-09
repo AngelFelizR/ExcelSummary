@@ -327,8 +327,6 @@ summary_reshape <- function(
 }
 
 
-
-
 #' Creates a list based on summary
 #'
 #' @description   Divide the rows of the data.table into different elements
