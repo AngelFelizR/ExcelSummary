@@ -1,7 +1,7 @@
 #' @importFrom data.table := %chin%
 #' @importFrom stats as.formula
 #' @import openxlsx2
-#' @importFrom stringr str_match str_split_fixed
+#' @importFrom stringr str_match str_split_fixed str_count
 
 # Transform data ----
 
@@ -30,7 +30,7 @@ st_header_matrix <- function(DT, sep = "_"){
   check_n_sep <-
     data.table::data.table(col_names = names(DT)
     )[, n_missing_levels :=
-        str_count(col_names, sep) |>
+        stringr::str_count(col_names, sep) |>
         (`+`)(1L) |>
         (\(x) max(x) - x)()]
 
@@ -71,21 +71,19 @@ wb_merge_header <- function(wb,
   # Adding Header Matrix to Excel
   wb <-
     openxlsx2::wb_add_data(wb, x = header_matrix,
-                           startCol = start_col,
-                           startRow = start_row,
+                           start_col = start_col,
+                           start_row = start_row,
                            colNames = FALSE,
                            na.strings = "")
 
 
   # Bottom borders for avoid merge values
-
   wb <-
     which(header_matrix[nrow(header_matrix),] %chin% avoid_merge) |>
     (\(x) x + start_col - 1L)() |>
     range() |>
-    openxlsx2::wb_dims(rows = nrow(header_matrix) + start_row - 1L,
-                       cols = _) |>
-    paste0(collapse = ":") |>
+    (\(x) openxlsx2::wb_dims(cols = x[1L]:x[2L],
+                             from_row = nrow(header_matrix) + start_row - 1L))() |>
     openxlsx2::wb_add_border(wb = wb,
                              sheet = sheet,
                              left_border = NULL,
@@ -123,9 +121,9 @@ wb_merge_header <- function(wb,
                   value_row_end = row + start_row + down,
                   value_col_start = col + start_col,
                   value_col_end = col + start_col + right)
-    ][, dims := paste0(openxlsx2::wb_dims(value_row_start, value_col_start),
-                       ":",
-                       openxlsx2::wb_dims(value_row_end, value_col_end))]  )()
+    ][, dims := openxlsx2::wb_dims(value_row_start:value_row_end,
+                                   value_col_start:value_col_end),
+      by = "check_value"])()
 
   data.table::setkey(merge_instructions, check_value)
 
@@ -229,7 +227,11 @@ wb_merge_header <- function(wb,
   last_header_row <- nrow(header_matrix)
   avoid_positions <- which(header_matrix[last_header_row, ] %chin% avoid_merge) + start_col - 1L
 
-  avoid_dims <- openxlsx2::wb_dims(start_row + last_header_row - 1L, range(avoid_positions)) |> paste0(collapse = ":")
+  avoid_dims <-
+    range(avoid_positions) |>
+    (\(x) x[1L]:x[2L])() |>
+    openxlsx2::wb_dims(from_row = start_row + last_header_row - 1L,
+                       cols = _)
 
   wb <-
     openxlsx2::wb_add_fill(wb,
@@ -269,9 +271,9 @@ apply_num_format <- function(wb,
 
   # Defining ranges to edit at detail level
   value_dims <-
-    paste0(openxlsx2::wb_dims(start_row + 1L, col_positions),
-           ":",
-           openxlsx2::wb_dims(last_row, col_positions))
+    sapply(col_positions,
+           FUN = \(x) openxlsx2::wb_dims(rows = (start_row + 1L):last_row,
+                                         from_col = x))
 
 
   # Applying formatting on each column at detail and total levels

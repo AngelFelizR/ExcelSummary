@@ -168,19 +168,19 @@ st_add_summary <- function(wb,
   wb <-
     # New sheet
     openxlsx2::wb_add_worksheet(wb,
-                     sheet = sheet_name,
-                     gridLines = FALSE,
-                     zoom = zoom) |>
+                                sheet = sheet_name,
+                                gridLines = FALSE,
+                                zoom = zoom) |>
     openxlsx2::wb_page_setup(orientation = "landscape",
-                  paperSize = 1,
-                  fitToWidth = TRUE,
-                  fitToHeight = TRUE,
-                  left = 0.25 ,
-                  right = 0.08,
-                  top = 0.6,
-                  bottom = 0.08,
-                  header = 0.08,
-                  footer = 0.08) |>
+                             paperSize = 1,
+                             fitToWidth = TRUE,
+                             fitToHeight = TRUE,
+                             left = 0.25 ,
+                             right = 0.08,
+                             top = 0.6,
+                             bottom = 0.08,
+                             header = 0.08,
+                             footer = 0.08) |>
 
     # Adding and formatting sheet title
     openxlsx2::wb_add_data(x = sheet_title) |>
@@ -194,9 +194,8 @@ st_add_summary <- function(wb,
 
     # Adding data to report
     openxlsx2::wb_add_data(x = DT,
-                startRow = start_row,
+                           start_row = start_row,
                 na.strings = "")
-
 
 
   # Formatting headers
@@ -223,15 +222,15 @@ st_add_summary <- function(wb,
     wb <-
       # General formatting
       openxlsx2::wb_add_fill(wb,
-                  dims = header_row,
-                  color = header_color_fill) |>
+                             dims = header_row,
+                             color = header_color_fill) |>
       openxlsx2::wb_add_font(dims = header_row,
-                  color = header_color_font,
-                  bold = fifelse(header_bold_font, "single", "") ) |>
+                             color = header_color_font,
+                             bold = fifelse(header_bold_font, "single", "") ) |>
       openxlsx2::wb_add_cell_style(dims = header_row,
-                        horizontal = header_h_align,
-                        vertical = header_v_align,
-                        wrapText = if(header_wrap_text) "1" else NULL ) |>
+                                   horizontal = header_h_align,
+                                   vertical = header_v_align,
+                                   wrapText = if(header_wrap_text) "1" else NULL ) |>
       # Applying header borders
       openxlsx2::wb_add_border(dims = header_first_col,
                     left_border = "thin",
@@ -254,8 +253,9 @@ st_add_summary <- function(wb,
       for(col_i in names(header_custom_h_align)){
         wb <-
           openxlsx2::wb_add_cell_style(wb,
-                            dims = wb_dims(start_row,
-                                                start_col - 1L + which(DT_names == col_i)),
+                                       dims = openxlsx2::wb_dims(
+                                         start_row,
+                                         start_col - 1L + which(DT_names == col_i)),
                             horizontal = header_custom_h_align[col_i],
                             vertical = header_v_align,
                             wrapText = if(header_wrap_text) "1" else NULL )
@@ -311,9 +311,10 @@ st_add_summary <- function(wb,
                         widths = custom_col_format[[col_i]][["width"]])
 
       custom_dim <-
-        paste0(openxlsx2::wb_dims(start_row + 1L, custom_col_position),
-               ":",
-               openxlsx2::wb_dims(last_row, custom_col_position))
+        openxlsx2::wb_dims(
+          rows = c((start_row + 1L):last_row),
+          from_col = custom_col_position
+        )
 
       wb <-
         openxlsx2::wb_add_cell_style(wb, dims = custom_dim,
@@ -336,9 +337,8 @@ st_add_summary <- function(wb,
     highlight_dims <-
       c(which(DT[[highlight_col]] %like% highlight_row_pattern) + start_row,
         last_row) |>
-      (\(row) paste0(openxlsx2::wb_dims(row, start_col),
-                     ":",
-                     openxlsx2::wb_dims(row, ncol(DT) + start_col -1L)) )()
+      (\(x) openxlsx2::wb_dims(cols = start_col:(ncol(DT) + start_col -1L),
+                               rows = x[1L]:x[2L]) )()
 
     for(highlight_i in highlight_dims){
 
@@ -353,9 +353,8 @@ st_add_summary <- function(wb,
   }else{
 
     last_row_dims <-
-      paste0(openxlsx2::wb_dims(last_row, start_col),
-             ":",
-             openxlsx2::wb_dims(last_row, ncol(DT) + start_col -1L))
+      openxlsx2::wb_dims(from_row = last_row,
+                         cols = start_col:( ncol(DT) + start_col -1L))
 
 
     wb <-
@@ -395,9 +394,8 @@ st_add_summary <- function(wb,
       border_col_position <- which(DT_names == col_i) + start_col - 1L
 
       border_body_dim <-
-        paste0(openxlsx2::wb_dims(start_row + 1L, border_col_position),
-               ":",
-               openxlsx2::wb_dims(last_row - 1L, border_col_position))
+        openxlsx2::wb_dims(from_col = border_col_position,
+                           rows = (start_row + 1L):(last_row - 1L))
 
       border_last_dim <- openxlsx2::wb_dims(last_row, border_col_position)
 
