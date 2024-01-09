@@ -99,6 +99,7 @@ custom_dcast <- function(DT,
 #' @param col_var a string representing a categorical column to be represented on columns after casting the table.
 #' @param row_var2 a string representing a categorical column to be represented as sub-rows of the column indicated in the \code{row_var1} argument.
 #' @param split_var a string representing a categorical column used as a reference to create more than want summary table of the same data.
+#' @param row_var1_prefix a prefix to to identify a summary row.
 #' @param value_fun defines a simple summary function for the variables defined in the \code{vars_to_summary} argument. By default it calculates the sum of variables.
 #' @param value_total_fun defines the functions to be used to calculate the Total by row and column.
 #' @param col_title a title to describe the variable used to create the columns.
@@ -127,8 +128,9 @@ summary_reshape <- function(
     split_var = NULL,
 
     # Argument with defaults
-    value_fun = function(x) sum(x, na.rm = TRUE),
+    value_fun = \(x) sum(x, na.rm = TRUE),
     value_total_fun = value_fun,
+    row_var1_prefix = if(is.null(row_var2)) NULL else col_var,
     col_title = col_var,
     total_title_by_row = "Total",
     total_title_by_col = "Grand Total",
@@ -322,8 +324,68 @@ summary_reshape <- function(
 
   }
 
+
+
   return(output_summary)
 
+}
+
+
+
+#' @title Arrange the reshaped table
+#'
+#' @param DT a reshaped data.table
+#' @param row_var1 a string representing a categorical column to be represented on rows after casting the table.
+#' @param row_var2 a string representing a categorical column to be represented as sub-rows of the column indicated in the \code{row_var1} argument.
+#' @param split_var a string representing a categorical column used as a reference to create more than want summary table of the same data.
+#' @param total_title_by_row a title to describe the column created to have the total of each row.
+#' @param total_title_by_col a title to describe the row created to have the total of each column.
+#'
+#' @return A \code{data.table}
+#' @export
+
+arrange_table <- function(DT,
+                          row_var1,
+                          row_var2 = NULL,
+                          split_var = NULL,
+                          row_var1_prefix = if(!is.null(row_var2)) paste0(row_var1,": ") else NULL,
+                          total_title_by_row = "Total",
+                          total_title_by_col = "Grand Total") {
+
+  # Defining valid variables
+  vars_list <-
+    list(row_var1_d = row_var1,
+         row_var2_d = row_var2,
+         split_var_d = split_var,
+         total_title_by_row_d = total_title_by_row) |>
+    (\(x) x[!is.null(x)])()
+
+  # Arranging the table
+  dt_arranged <-
+    DT[do.call("order",
+               list(if(!is.null(split_var)) split_var_d else NULL,
+                    if(!is.null(row_var2)) (row_var2_d == total_title_by_col) else (row_var1_d == total_title_by_col),
+                    if(!is.null(row_var2)) row_var1_d else -total_title_by_row_d,
+                    if(!is.null(row_var2)) -(row_var2_d == row_var1_d) else NULL,
+                    if(!is.null(row_var2)) -total_title_by_row_d else NULL) |>
+                 (\(x) x[!is.null(x)])()),
+       env = vars_list]
+
+  if(!is.null(row_var1_prefix)){
+
+    # Adding prefix
+    dt_arranged[row_var2_d == row_var1_d &
+                  row_var2_d != total_title_by_col,
+                (row_var2) := paste0(row_var1_prefix, row_var1_d),
+                env = vars_list]
+
+    # Removing original column
+    dt_arranged[, (row_var1) := NULL][]
+  }
+
+
+
+  return(dt_arranged)
 }
 
 

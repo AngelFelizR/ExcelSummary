@@ -14,6 +14,7 @@ summary_reshape(
   split_var = NULL,
   value_fun = function(x) sum(x, na.rm = TRUE),
   value_total_fun = value_fun,
+  row_var1_prefix = if (is.null(row_var2)) NULL else col_var,
   col_title = col_var,
   total_title_by_row = "Total",
   total_title_by_col = "Grand Total",
@@ -40,6 +41,8 @@ summary_reshape(
 \item{value_fun}{defines a simple summary function for the variables defined in the \code{vars_to_summary} argument. By default it calculates the sum of variables.}
 
 \item{value_total_fun}{defines the functions to be used to calculate the Total by row and column.}
+
+\item{row_var1_prefix}{a prefix to to identify a summary row.}
 
 \item{col_title}{a title to describe the variable used to create the columns.}
 
