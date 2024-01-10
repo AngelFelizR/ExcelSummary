@@ -398,6 +398,7 @@ arrange_table <- function(DT,
 #' @param split_var a string making the reference to the column we need to use a reference to split the \code{data.table}.
 #' @param lookup_v a named vector used to change the groups used to split the rows.
 #' @param name_suffix adding a suffix to the table name to be show as the title of each sheet.
+#' @param decreasing it can revert the order of the \code{data.tables} in the resulting list.
 #'
 #' @return a \code{list} of \code{data.table}
 #' @export
@@ -405,7 +406,8 @@ arrange_table <- function(DT,
 split_summary <- function(DT,
                           split_var,
                           lookup_v = NULL,
-                          name_suffix = NULL){
+                          name_suffix = NULL,
+                          decreasing = FALSE){
 
   # We don't want side effects
   DT <- data.table::copy(DT)
@@ -426,7 +428,7 @@ split_summary <- function(DT,
   data.table::setkey(DT, split_value)
 
   # Listing the iterations needed
-  values_to_split <- DT[, unique(split_value)] |> sort()
+  values_to_split <- DT[, unique(split_value)] |> sort(decreasing = decreasing)
 
   # Defining a name for each split
   table_names <-
