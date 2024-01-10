@@ -4,7 +4,13 @@
 \alias{split_summary}
 \title{Creates a list based on summary}
 \usage{
-split_summary(DT, split_var, lookup_v = NULL, name_suffix = NULL)
+split_summary(
+  DT,
+  split_var,
+  lookup_v = NULL,
+  name_suffix = NULL,
+  decreasing = FALSE
+)
 }
 \arguments{
 \item{DT}{a reshaped data.table}
@@ -14,6 +20,8 @@ split_summary(DT, split_var, lookup_v = NULL, name_suffix = NULL)
 \item{lookup_v}{a named vector used to change the groups used to split the rows.}
 
 \item{name_suffix}{adding a suffix to the table name to be show as the title of each sheet.}
+
+\item{decreasing}{it can revert the order of the \code{data.tables} in the resulting list.}
 }
 \value{
 a \code{list} of \code{data.table}
