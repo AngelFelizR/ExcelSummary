@@ -334,18 +334,22 @@ st_add_summary <- function(wb,
 
   if(!missing(highlight_col)){
 
-    highlight_dims <-
+    highlight_rows <-
       c(which(DT[[highlight_col]] %like% highlight_row_pattern) + start_row,
-        last_row) |>
-      (\(x) openxlsx2::wb_dims(cols = start_col:(ncol(DT) + start_col -1L),
-                               rows = x[1L]:x[2L]) )()
+        last_row)
 
-    for(highlight_i in highlight_dims){
+    for(rows_i in highlight_rows){
+
+      highlight_dims <- openxlsx2::wb_dims(
+        cols = start_col:(ncol(DT) + start_col -1L),
+        rows = rows_i
+      )
 
       wb <-
-        openxlsx2::wb_add_fill(wb, dims = highlight_i,
+        openxlsx2::wb_add_fill(wb,
+                               dims = highlight_dims,
                     color = highlight_row_fill) |>
-        openxlsx2::wb_add_font(dims = highlight_i,
+        openxlsx2::wb_add_font(dims = highlight_dims,
                     bold = "single")
 
     }

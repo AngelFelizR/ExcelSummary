@@ -29,17 +29,15 @@ mtcars_row_highlight <-
   arrange_table(row_var1 = "cyl",
                 row_var2 = "vs")
 
+mtcars_row_highlight_wb <-
+  st_add_summary(openxlsx2::wb_workbook("Angel Feliz"),
+                 mtcars_row_highlight,
+                 sheet_title = "example",
+                 highlight_col = "vs",
+                 highlight_row_pattern = "^cyl",
+                 value_col_pattern = "_(Value|Number)$",
+                 values_types = "Value",
+                 header_has_levels = TRUE,
+                 header_avoid_merge = c("Value", "Number"))
 
-st_add_summary(openxlsx2::wb_workbook("Angel Feliz"),
-               mtcars_row_highlight,
-               sheet_title = "example",
-               highlight_col = "vs",
-               highlight_row_pattern = "^cyl",
-               value_col_pattern = "_(Value|Number)$",
-               values_types = "Value",
-               header_has_levels = TRUE,
-               header_avoid_merge = c("Value", "Number")) |>
-  openxlsx2::wb_open()
-
-
-use_data(mtcars_headers_wb, internal = TRUE, overwrite = TRUE)
+use_data(mtcars_headers_wb, mtcars_row_highlight_wb, internal = TRUE, overwrite = TRUE)

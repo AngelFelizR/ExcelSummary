@@ -78,17 +78,25 @@ wb_merge_header <- function(wb,
 
 
   # Bottom borders for avoid merge values
-  wb <-
-    which(header_matrix[nrow(header_matrix),] %chin% avoid_merge) |>
-    (\(x) x + start_col - 1L)() |>
-    range() |>
-    (\(x) openxlsx2::wb_dims(cols = x[1L]:x[2L],
-                             from_row = nrow(header_matrix) + start_row - 1L))() |>
-    openxlsx2::wb_add_border(wb = wb,
-                             sheet = sheet,
-                             left_border = NULL,
-                             right_border = NULL,
-                             top_border = NULL)
+
+  avoid_merge_positions <- which(header_matrix[nrow(header_matrix),] %chin% avoid_merge)
+
+  # Somethimes we don't need this part
+  if(length(avoid_merge_positions) > 0L){
+
+    wb <-
+      range(avoid_merge_positions + start_col - 1L) |>
+      (\(x) openxlsx2::wb_dims(cols = x[1L]:x[2L],
+                               from_row = nrow(header_matrix) + start_row - 1L))() |>
+      openxlsx2::wb_add_border(wb = wb,
+                               sheet = sheet,
+                               left_border = NULL,
+                               right_border = NULL,
+                               top_border = NULL)
+
+  }
+
+
 
 
   # We need to defining the cells to change
@@ -227,25 +235,30 @@ wb_merge_header <- function(wb,
   last_header_row <- nrow(header_matrix)
   avoid_positions <- which(header_matrix[last_header_row, ] %chin% avoid_merge) + start_col - 1L
 
-  avoid_dims <-
-    range(avoid_positions) |>
-    (\(x) x[1L]:x[2L])() |>
-    openxlsx2::wb_dims(from_row = start_row + last_header_row - 1L,
-                       cols = _)
+  if(length(avoid_positions) > 0L) {
 
-  wb <-
-    openxlsx2::wb_add_fill(wb,
-                           sheet = sheet,
-                           dims = avoid_dims,
-                           color = color_fill) |>
-    openxlsx2::wb_add_font(sheet = sheet,
-                           dims = avoid_dims,
-                           color = color_font,
-                           bold = fifelse(bold_font, "single", "") ) |>
-    openxlsx2::wb_add_cell_style(sheet = sheet,
-                                 dims = avoid_dims,
-                                 horizontal = h_align,
-                                 vertical = v_align)
+    avoid_dims <-
+      range(avoid_positions) |>
+      (\(x) x[1L]:x[2L])() |>
+      openxlsx2::wb_dims(from_row = start_row + last_header_row - 1L,
+                         cols = _)
+
+    wb <-
+      openxlsx2::wb_add_fill(wb,
+                             sheet = sheet,
+                             dims = avoid_dims,
+                             color = color_fill) |>
+      openxlsx2::wb_add_font(sheet = sheet,
+                             dims = avoid_dims,
+                             color = color_font,
+                             bold = fifelse(bold_font, "single", "") ) |>
+      openxlsx2::wb_add_cell_style(sheet = sheet,
+                                   dims = avoid_dims,
+                                   horizontal = h_align,
+                                   vertical = v_align)
+  }
+
+
 
   return(wb)
 
@@ -269,22 +282,20 @@ apply_num_format <- function(wb,
   # We need to make sure that numbers have enough space to show up
   wb <- openxlsx2::wb_set_col_widths(wb, cols = col_positions, widths = col_width)
 
-  # Defining ranges to edit at detail level
-  value_dims <-
-    sapply(col_positions,
-           FUN = \(x) openxlsx2::wb_dims(rows = (start_row + 1L):last_row,
-                                         from_col = x))
-
-
   # Applying formatting on each column at detail and total levels
-  for(dim_i in seq_along(col_positions)){
+  for(col_i in col_positions){
 
+    # Defining ranges to edit at detail level
+    dim_i <- openxlsx2::wb_dims(rows = (start_row + 1L):last_row,
+                                cols = col_i)
+
+    # Applying format
     wb <-
       openxlsx2::wb_add_cell_style(wb,
-                                   dims = value_dims[dim_i],
+                                   dims = dim_i,
                                    horizontal = col_h_align,
                                    vertical = col_v_align) |>
-      openxlsx2::wb_add_numfmt(dims = value_dims[dim_i],
+      openxlsx2::wb_add_numfmt(dims = dim_i,
                                numfmt = col_numfmt)
   }
 

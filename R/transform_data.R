@@ -338,6 +338,7 @@ summary_reshape <- function(
 #' @param row_var1 a string representing a categorical column to be represented on rows after casting the table.
 #' @param row_var2 a string representing a categorical column to be represented as sub-rows of the column indicated in the \code{row_var1} argument.
 #' @param split_var a string representing a categorical column used as a reference to create more than want summary table of the same data.
+#' @param row_var1_prefix defines the prefix to be used in summary rows related to  \code(row_var1) argument.
 #' @param total_title_by_row a title to describe the column created to have the total of each row.
 #' @param total_title_by_col a title to describe the row created to have the total of each column.
 #'
@@ -381,9 +382,8 @@ arrange_table <- function(DT,
 
     # Removing original column
     dt_arranged[, (row_var1) := NULL][]
+
   }
-
-
 
   return(dt_arranged)
 }
