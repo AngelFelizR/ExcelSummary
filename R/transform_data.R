@@ -413,6 +413,7 @@ split_summary <- function(DT,
   # If the table is empty
   if(nrow(DT) == 0L) return(vector("list"))
 
+  # Changing the split criteria
   if(is.null(lookup_v)){
     DT[, split_value := split_var_value,
        env = list(split_var_value = split_var)]
@@ -421,10 +422,13 @@ split_summary <- function(DT,
        env = list(split_var_value = split_var)]
   }
 
+  # Setting a key
   data.table::setkey(DT, split_value)
 
+  # Listing the iterations needed
   values_to_split <- DT[, unique(split_value)] |> sort()
 
+  # Defining a name for each split
   table_names <-
     if(is.null(name_suffix)){
       values_to_split
@@ -432,13 +436,22 @@ split_summary <- function(DT,
       paste0(values_to_split, name_suffix)
     }
 
+  # Applying the split
   split_list <-
     lapply(seq_along(values_to_split),
            function(x){
-             data.table::setattr(DT[list(values_to_split[x]),
-                                    !c("split_value"), nomatch = NULL],
-                                 "table_name",
-                                 table_names[x]) })
+
+             # Using key filtering to select the data
+             DT[list(values_to_split[x]),
+                nomatch = NULL,
+                # Remove columns used to split
+                j = !c("split_value", split_var),
+                with = FALSE] |>
+
+               # Assigning table name to each table
+               data.table::setattr("table_name", table_names[x])
+
+           })
 
   data.table::setattr(split_list, "names", table_names)
 

@@ -117,8 +117,11 @@ st_add_summary <- function(wb,
     header_matrix <- st_header_matrix(DT)
     start_row_original <- start_row
     start_row <- start_row + nrow(header_matrix) - 1L
+    last_row <- start_row + nrow(DT)
 
   }else{
+
+    last_row <- start_row + nrow(DT)
 
     # DEFINING HEADER BORDERS
 
@@ -159,8 +162,6 @@ st_add_summary <- function(wb,
     body_bottom_right <- openxlsx2::wb_dims(last_row, start_col + n_cols - 1L)
 
   }
-
-  last_row <- start_row + nrow(DT)
 
 
   # Adding a sheet, sheet title and base data
