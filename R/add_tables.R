@@ -39,6 +39,7 @@ col_format <- function(numfmt,
 #' @param custom_col_format a named \code{list} based on DT var names with the results of calling the \code{col_format} function.
 #' @param header_custom_h_align align content horizontal ('left', 'center', 'right')
 #' @param sheet_name a string to define the sheet name.
+#' @param add_new_sheet Defining if we want to add a new sheet.
 #' @param values_types a
 #' @param sheet_title_row a
 #' @param sheet_title_size a
@@ -77,6 +78,7 @@ st_add_summary <- function(wb,
                            custom_col_format,
                            header_custom_h_align,
                            sheet_name = sheet_title,
+                           add_new_sheet = TRUE,
                            values_types = c("Number", "Value"),
                            sheet_title_row = 1L,
                            sheet_title_size = 22,
@@ -166,37 +168,50 @@ st_add_summary <- function(wb,
 
   # Adding a sheet, sheet title and base data
 
+  if(add_new_sheet){
+
+    wb <-
+      # New sheet
+      openxlsx2::wb_add_worksheet(wb,
+                                  sheet = sheet_name,
+                                  gridLines = FALSE,
+                                  zoom = zoom) |>
+      openxlsx2::wb_page_setup(orientation = "landscape",
+                               paperSize = 1,
+                               fitToWidth = TRUE,
+                               fitToHeight = TRUE,
+                               left = 0.25 ,
+                               right = 0.08,
+                               top = 0.6,
+                               bottom = 0.08,
+                               header = 0.08,
+                               footer = 0.08)
+  }
+
+
+  # Adding and formatting sheet title
+  if(!is.null(sheet_title)) {
+
+    wb <-
+      openxlsx2::wb_add_data(wb,
+                             x = sheet_title) |>
+      openxlsx2::wb_add_font(size = sheet_title_size, bold = "single") |>
+      openxlsx2::wb_add_border(dims = paste0(openxlsx2::wb_dims(sheet_title_row, start_col),
+                                             ":",
+                                             openxlsx2::wb_dims(sheet_title_row, ncol(DT))),
+                               left_border = NULL,
+                               right_border = NULL,
+                               top_border = NULL)
+
+  }
+
+
+  # Adding data to report
   wb <-
-    # New sheet
-    openxlsx2::wb_add_worksheet(wb,
-                                sheet = sheet_name,
-                                gridLines = FALSE,
-                                zoom = zoom) |>
-    openxlsx2::wb_page_setup(orientation = "landscape",
-                             paperSize = 1,
-                             fitToWidth = TRUE,
-                             fitToHeight = TRUE,
-                             left = 0.25 ,
-                             right = 0.08,
-                             top = 0.6,
-                             bottom = 0.08,
-                             header = 0.08,
-                             footer = 0.08) |>
-
-    # Adding and formatting sheet title
-    openxlsx2::wb_add_data(x = sheet_title) |>
-    openxlsx2::wb_add_font(size = sheet_title_size, bold = "single") |>
-    openxlsx2::wb_add_border(dims = paste0(openxlsx2::wb_dims(sheet_title_row, start_col),
-                                ":",
-                                openxlsx2::wb_dims(sheet_title_row, ncol(DT))),
-                  left_border = NULL,
-                  right_border = NULL,
-                  top_border = NULL) |>
-
-    # Adding data to report
-    openxlsx2::wb_add_data(x = DT,
+    openxlsx2::wb_add_data(wb,
+                           x = DT,
                            start_row = start_row,
-                na.strings = "")
+                           na.strings = "")
 
 
   # Formatting headers

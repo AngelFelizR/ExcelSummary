@@ -13,6 +13,7 @@ st_add_summary(
   custom_col_format,
   header_custom_h_align,
   sheet_name = sheet_title,
+  add_new_sheet = TRUE,
   values_types = c("Number", "Value"),
   sheet_title_row = 1L,
   sheet_title_size = 22,
@@ -57,6 +58,8 @@ st_add_summary(
 \item{header_custom_h_align}{align content horizontal ('left', 'center', 'right')}
 
 \item{sheet_name}{a string to define the sheet name.}
+
+\item{add_new_sheet}{Defining if we want to add a new sheet.}
 
 \item{values_types}{a}
 
