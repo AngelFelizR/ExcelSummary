@@ -196,8 +196,9 @@ st_add_summary <- function(wb,
       openxlsx2::wb_add_data(wb,
                              x = sheet_title,
                              start_col = start_col,
-                             start_row = start_row - 3) |>
-      openxlsx2::wb_add_font(size = sheet_title_size, bold = "single") |>
+                             start_row = sheet_title_row) |>
+      openxlsx2::wb_add_font(dims = openxlsx2::rowcol_to_dims(sheet_title_row, start_col),
+                             size = sheet_title_size, bold = "single") |>
       openxlsx2::wb_add_border(dims = paste0(openxlsx2::wb_dims(sheet_title_row, start_col),
                                              ":",
                                              openxlsx2::wb_dims(sheet_title_row, ncol(DT))),
