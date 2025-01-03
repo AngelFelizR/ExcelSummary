@@ -19,18 +19,18 @@ arrange_table(
 
 \item{row_var1}{a string representing a categorical column to be represented on rows after casting the table.}
 
-\item{row_var2}{a string representing a categorical column to be represented as sub-rows of the column indicated in the \code{row_var1} argument.}
+\item{row_var2}{a string representing a categorical column to be represented as sub-rows of the column indicated in the `row_var1` argument.}
 
 \item{split_var}{a string representing a categorical column used as a reference to create more than want summary table of the same data.}
 
-\item{row_var1_prefix}{defines the prefix to be used in summary rows related to  \code(row_var1) argument.}
+\item{row_var1_prefix}{defines the prefix to be used in summary rows related to  `row_var1` argument.}
 
 \item{total_title_by_row}{a title to describe the column created to have the total of each row.}
 
 \item{total_title_by_col}{a title to describe the row created to have the total of each column.}
 }
 \value{
-A \code{data.table}
+A `data.table`
 }
 \description{
 Arrange the reshaped table

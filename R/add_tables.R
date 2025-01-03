@@ -106,6 +106,11 @@ st_add_summary <- function(wb,
                            value_col_v_align = "center",
                            highlight_row_fill = openxlsx2::wb_color(hex = "FFD9D9D9")){
 
+  # If DT is null then we don't have to do anything
+  if(is.null(DT)){
+    return(wb)
+  }
+
 
   # Defining reference points
 
@@ -509,6 +514,11 @@ st_add_table <- function(wb,
                          sheet_title_row = 1L,
                          sheet_title_size = 22L,
                          ...){
+
+  # If DT is null then we don't have to do anything
+  if(is.null(DT)){
+    return(wb)
+  }
 
   num_cols <- ncol(DT)
   num_rows <- nrow(DT)
