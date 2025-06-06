@@ -165,12 +165,12 @@ wb_merge_header <- function(wb,
 
     # Merging values and applying fill and font color
     wb <-
-      openxlsx2::wb_merge_cells(wb, sheet = sheet, rows = rows, cols = cols) |>
+      openxlsx2::wb_merge_cells(wb, sheet = sheet, dims = wb_dims(rows = rows, cols = cols)) |>
       openxlsx2::wb_add_fill(sheet = sheet, dims = dims,
                              color = color_fill) |>
       openxlsx2::wb_add_font(sheet = sheet, dims = dims,
                              color = color_font,
-                             bold = fifelse(bold_font, "single", "") )
+                             bold = bold_font )
 
     # Defining borders all cells but avoid_merge values
     if(variable %chin% first_col_value){
@@ -251,7 +251,7 @@ wb_merge_header <- function(wb,
       openxlsx2::wb_add_font(sheet = sheet,
                              dims = avoid_dims,
                              color = color_font,
-                             bold = fifelse(bold_font, "single", "") ) |>
+                             bold = bold_font ) |>
       openxlsx2::wb_add_cell_style(sheet = sheet,
                                    dims = avoid_dims,
                                    horizontal = h_align,
