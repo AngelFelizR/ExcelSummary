@@ -203,7 +203,7 @@ st_add_summary <- function(wb,
                              start_col = start_col,
                              start_row = sheet_title_row) |>
       openxlsx2::wb_add_font(dims = openxlsx2::rowcol_to_dims(sheet_title_row, start_col),
-                             size = sheet_title_size, bold = "single") |>
+                             size = sheet_title_size, bold = FALSE) |>
       openxlsx2::wb_add_border(dims = paste0(openxlsx2::wb_dims(sheet_title_row, start_col),
                                              ":",
                                              openxlsx2::wb_dims(sheet_title_row, ncol(DT))),
@@ -250,7 +250,7 @@ st_add_summary <- function(wb,
                              color = header_color_fill) |>
       openxlsx2::wb_add_font(dims = header_row,
                              color = header_color_font,
-                             bold = fifelse(header_bold_font, "single", "") ) |>
+                             bold = header_bold_font ) |>
       openxlsx2::wb_add_cell_style(dims = header_row,
                                    horizontal = header_h_align,
                                    vertical = header_v_align,
@@ -374,7 +374,7 @@ st_add_summary <- function(wb,
                                dims = highlight_dims,
                     color = highlight_row_fill) |>
         openxlsx2::wb_add_font(dims = highlight_dims,
-                    bold = "single")
+                    bold = FALSE)
 
     }
 
@@ -389,7 +389,7 @@ st_add_summary <- function(wb,
       openxlsx2::wb_add_fill(wb, dims = last_row_dims,
                   color = highlight_row_fill) |>
       openxlsx2::wb_add_font(dims = last_row_dims,
-                  bold = "single")
+                  bold = FALSE)
 
   }
 
@@ -534,7 +534,7 @@ st_add_table <- function(wb,
 
     wb <-
       openxlsx2::wb_add_data(wb, x = sheet_title) |>
-      openxlsx2::wb_add_font(size = sheet_title_size, bold = "single") |>
+      openxlsx2::wb_add_font(size = sheet_title_size, bold = FALSE) |>
       openxlsx2::wb_add_border(dims = paste0(openxlsx2::wb_dims(sheet_title_row, 1L),
                                   ":",
                                   openxlsx2::wb_dims(sheet_title_row, num_cols)),
